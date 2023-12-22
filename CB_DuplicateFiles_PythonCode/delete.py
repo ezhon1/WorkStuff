@@ -4,14 +4,17 @@ import xlsxwriter as writer
 from pandas.api.types import is_number
 from openpyxl import load_workbook
 
+# Importing spreadsheets and making dataframe
 #sheet = pd.read_excel('df26multiple.xlsx')
 sheet = pd.read_excel('Sheets/[INSERTNAMEHERE].xlsx')
 
 df = pd.DataFrame(sheet)
 
-rows = len(df.index) #length of spreadsheet (number of rows)
+# Getting length of spreadsheet (number of rows)
+rows = len(df.index)
 print(rows)
 
+# Making a temp df to put the selected rows
 dftemp = pd.DataFrame(df.iloc[0])
 df = pd.concat([df, dftemp], ignore_index=True)
 # print (df.columns)
@@ -31,13 +34,13 @@ df = pd.concat([df, dftemp], ignore_index=True)
 #print (owners)
 #numOwners = len(owners)
 
+# Deleting rows where 
 ind=0
 j=0
 keep="Keep keep"
 n=0
 k=0
 a=np.array([])
-
 for index in range(rows): 
     if index==0: #continue to start loop from second value
         continue
@@ -49,30 +52,31 @@ for index in range(rows):
             for ppl in range(num.astype(np.int64)): 
                 if ppl==index:
                     continue
+                # Figuring out if Action column cell is empty
                 if ppl<num:
                     if pd.isnull(df.loc[j+1]['Action']):
                         print ("null")
-                    elif df.loc[j+1]['Action'] in keep:
+                    elif df.loc[j+1]['Action'] in keep: # if the file is to be kept
                         print (df.loc[j+1]['Action'])
                         n = n+1
                     j = j+1
             numKeep = f"total: {num}, keep: {num-n}"
             print (numKeep)
+        # If the number of files to keep is the same as NumFiles
         if n==num-1:
             k=ind
             for ppl in range(num.astype(np.int64)): 
                 if ppl==index:
                     continue
                 if ppl<=num:
-                    a = np.append(a,[k])
+                    a = np.append(a,[k]) # append all the rows of that duplicated file to array a
                     print (f"del: {k}")
                     k = k+1
         n=0
     ind = index #update ind with current index
 print (a)
-df = df.drop(a)
-## https://stackoverflow.com/questions/57911508/pandas-iterate-and-return-index-next-index-and-row
+df = df.drop(a) # drop array a from df
 
-
+# Export df with deletions to spreadsheet
 df.to_excel('Sheets/with deletions/[INSERTNAMEHERE].xlsx')
 
