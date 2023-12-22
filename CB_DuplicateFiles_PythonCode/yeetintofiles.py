@@ -4,14 +4,17 @@ import xlsxwriter as writer
 from pandas.api.types import is_number
 from openpyxl import load_workbook
 
+# Importing full spreadsheet and making dataframe
 #sheet = pd.read_excel('df26multiple.xlsx')
 sheet = pd.read_excel('listedPeeps.xlsx')
 
 df = pd.DataFrame(sheet)
 
+# Importing individual owner's spreadsheet and making dataframe
 pf = pd.read_excel("Sheets/[INSERTNAMEHERE].xlsx")
 pf = pd.DataFrame(pf)
 
+# Getting length of full spreadsheet
 rows = len(df.index) #length of spreadsheet (number of rows)
 print(rows)
 
@@ -37,13 +40,14 @@ ind=0
 j=0
 n=0
 x=0
-dftemp = pd.DataFrame()
+dftemp = pd.DataFrame() # temp dataframe to stick things before sticking them into pf
 for index in range(rows): 
     if index==0: #continue to start loop from second value
         continue
     owner = df.loc[ind]['Owner']
     num = df.loc[ind]['NumFiles']+1
     if num > 1:
+        # Concatenating duplicate file groups with given owner to dftemp
         if "[INSERTNAMEHERE]" in owner:
             print (f"1owner: {owner}")
             print (num)
@@ -60,7 +64,7 @@ for index in range(rows):
                 print (len(dftemp))
             file = "Sheets/[INSERTNAMEHERE].xlsx"
             print (f"3file: {file}")
-            pf = pd.concat([pf, dftemp], ignore_index=True)
+            pf = pd.concat([pf, dftemp], ignore_index=True) # Sticking contents of dftemp to pf (existing rows for that person)
             pf.to_excel("Sheets/[INSERTNAMEHERE].xlsx")
         
 
@@ -92,6 +96,6 @@ for index in range(rows):
         #    file = f"{name}.xlsx"
         #    print (f"3file: {file}")
         #    dftemp.to_excel(file)
-        dftemp = pd.DataFrame() 
-    ind = index #update ind with current index\
+        dftemp = pd.DataFrame() # Resetting/clearing dftemp
+    ind = index #update ind with current index
 
