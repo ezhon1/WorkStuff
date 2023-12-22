@@ -3,12 +3,13 @@ import numpy as np
 from pandas.api.types import is_number
 from openpyxl import load_workbook
 
+# Importing spreadsheet and making dataframe
 df = pd.read_excel('df26.xlsx')
-
 
 df = pd.DataFrame(df)
 
-rows = len(df.index) #length of spreadsheet (number of rows)
+# Finding the length of spreadsheet (number of rows)
+rows = len(df.index)
 print(rows)
 
 # print (df.columns)
@@ -16,12 +17,14 @@ print(rows)
 #owners = df['Owner'].value_counts()
 #print (owners)
 
+# Getting the index for all the files without multiple owners
 idx = df.index.get_indexer_for(df[df.Owner != '[multiple]'].index)
 print (idx)
 
 location = df.loc[idx, 'NumFiles']
 #print (location)
 
+# listing the owners of duplications with multiple owners in the duplicate collection row
 ind=0
 j=0
 for index in range(rows): 
@@ -35,6 +38,7 @@ for index in range(rows):
             for ppl in range(num.astype(np.int64)): 
                 if ppl==index:
                     continue
+                # Appending owners not already in the [multiple] cell
                 if ppl<=num:
                     if df.loc[j+1]['Owner'] not in owner:
                         owner = f"{owner}, {df.iloc[j+1]['Owner']}"
@@ -42,10 +46,10 @@ for index in range(rows):
                     j = j+1
             newOwner = f"ind:{ind}, NumFiles:{num}, Owner:{owner}"
             print (newOwner)
-    df.at[ind, 'Owner'] = owner
+    df.at[ind, 'Owner'] = owner #updating cell
     ind = index #update ind with current index
 
-
+# Exporting df as spreadsheet
 df.to_excel('listedPeeps.xlsx')
 
 #df2 = pd.read_excel('dftestfull.xlsx')
